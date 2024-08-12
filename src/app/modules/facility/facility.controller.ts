@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Request, Response } from 'express';
 import { FacilityServices } from './facility.services';
 import { FacilityValidation } from './facility.validation';
@@ -17,7 +16,11 @@ const createFacility = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    console.log(err);
+    res.status(500).json({
+      success: false,
+      message: 'Server error!!!',
+      err,
+    });
   }
 };
 const getAllFacilities = async (req: Request, res: Response) => {
@@ -30,7 +33,11 @@ const getAllFacilities = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    console.log(err);
+    res.status(500).json({
+      success: false,
+      message: 'Server error!!!',
+      err,
+    });
   }
 };
 const updateFacility = async (req: Request, res: Response) => {
@@ -50,7 +57,11 @@ const updateFacility = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    console.log(err);
+    res.status(500).json({
+      success: false,
+      message: 'Server error!!!',
+      err,
+    });
   }
 };
 
@@ -65,7 +76,11 @@ const softDeleteFacility = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    console.log(err);
+    res.status(500).json({
+      success: false,
+      message: 'Server error!!!',
+      err,
+    });
   }
 };
 

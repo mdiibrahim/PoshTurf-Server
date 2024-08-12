@@ -31,12 +31,17 @@ const updateFacilityInDB = async (
   id: string,
   facilityData: Partial<IFacility>,
 ) => {
-  const result = await Facility.findByIdAndUpdate(id, facilityData, {
+  const { isDeleted, ...filteredData } = facilityData;
+  if (!isDeleted) {
+    throw new Error('Facility Cannot delete in this route!!!');
+  }
+  const result = await Facility.findByIdAndUpdate(id, filteredData, {
     new: true,
   }).select({
     createdAt: 0,
     updatedAt: 0,
   });
+
   return result;
 };
 

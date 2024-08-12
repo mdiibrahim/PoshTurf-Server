@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
 import { UserServices } from './user.services';
+import { UserValidation } from './user.validation';
 
 const createUser = async (req: Request, res: Response) => {
   try {
     const user = req.body;
-    const result = await UserServices.createUserInDB(user);
+    const zodParseUserData = UserValidation.userValidationSchema.parse(user);
+    const result = await UserServices.createUserInDB(zodParseUserData);
     res.status(200).json({
       success: true,
       statusCode: 200,
@@ -12,8 +14,11 @@ const createUser = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
+    res.status(500).json({
+      success: false,
+      message: 'Server error!!!',
+      err,
+    });
   }
 };
 

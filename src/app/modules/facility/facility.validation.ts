@@ -13,7 +13,11 @@ const facilityValidationSchema = z.object({
   updatedAt: z.date().optional(),
 });
 
-const updateFacilityValidationSchema = facilityValidationSchema.partial();
+const updateFacilityValidationSchema = facilityValidationSchema
+  .omit({
+    isDeleted: true,
+  })
+  .partial();
 
 export const FacilityValidation = {
   facilityValidationSchema,
