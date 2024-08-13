@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { IBooking } from './booking.interface';
+import { isBooking } from './booking.constant';
 
 const bookingSchema = new Schema<IBooking>(
   {
@@ -26,7 +27,7 @@ const bookingSchema = new Schema<IBooking>(
     },
     isBooked: {
       type: String,
-      enum: ['confirmed', 'canceled'],
+      enum: isBooking,
       default: 'confirmed',
     },
   },

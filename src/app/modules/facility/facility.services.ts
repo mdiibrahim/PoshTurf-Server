@@ -1,3 +1,5 @@
+import httpStatus from 'http-status';
+import AppError from '../../errors/AppError';
 import { IFacility } from './facility.interface';
 import { Facility } from './facility.model';
 
@@ -21,7 +23,7 @@ const getAllFacilitiesFromDB = async () => {
     },
   );
   if (!result) {
-    throw new Error('Facility not found!!!');
+    throw new AppError(httpStatus.NOT_FOUND, 'Facility not found!!!');
   }
 
   return result;
@@ -33,7 +35,10 @@ const updateFacilityInDB = async (
 ) => {
   const { isDeleted, ...filteredData } = facilityData;
   if (!isDeleted) {
-    throw new Error('Facility Cannot delete in this route!!!');
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Facility Cannot delete in this route!!!',
+    );
   }
   const result = await Facility.findByIdAndUpdate(id, filteredData, {
     new: true,

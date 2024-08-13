@@ -1,5 +1,6 @@
 import { Types } from 'mongoose';
 import { z } from 'zod';
+import { isBooking } from './booking.constant';
 
 const objectIdValidationSchema = z
   .string()
@@ -19,7 +20,9 @@ export const bookingValidationSchema = z.object({
     .string()
     .regex(/^\d{2}:\d{2}$/, 'End time must be in HH:mm format.'),
   payableAmount: z.number().optional(),
-  isBooked: z.enum(['confirmed', 'canceled']).default('confirmed'),
+  isBooked: z
+    .enum([...isBooking] as [string, ...string[]])
+    .default('confirmed'),
 });
 
 export const BookingValidation = {

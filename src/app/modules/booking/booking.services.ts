@@ -1,3 +1,5 @@
+import httpStatus from 'http-status';
+import AppError from '../../errors/AppError';
 import { Facility } from '../facility/facility.model';
 import { IBooking } from './booking.interface';
 import { Booking } from './booking.model';
@@ -7,7 +9,7 @@ const createBookingInDB = async (booking: IBooking) => {
   // Fetch the facility to get the pricePerHour
   const facilityData = await Facility.findById(facility);
   if (!facilityData) {
-    throw new Error('Facility not found!!!');
+    throw new AppError(httpStatus.NOT_FOUND, 'Facility not found!!!');
   }
   // Check for conflicting bookings
   const existingBooking = await Booking.findOne({
@@ -19,7 +21,10 @@ const createBookingInDB = async (booking: IBooking) => {
     ],
   });
   if (existingBooking) {
-    throw new Error('Facility is unavailable during the requested time slot');
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Facility is unavailable during the requested time slot',
+    );
   }
   // Calculate payableAmount
   const start = new Date(`${date}T${startTime}`);
@@ -49,7 +54,7 @@ const getAllBookingsFromDB = async () => {
     },
   ).populate('facility');
   if (!result) {
-    throw new Error('Booking not found!!!');
+    throw new AppError(httpStatus.NOT_FOUND, 'Booking not found!!!');
   }
 
   return result;

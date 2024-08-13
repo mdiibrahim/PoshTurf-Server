@@ -1,11 +1,11 @@
 import { Model } from 'mongoose';
-
+export type IRole = 'admin' | 'user';
 export interface IUser {
   name: string;
   email: string;
   password: string;
   phone: string;
-  role: 'admin' | 'user';
+  role: IRole;
   address: string;
 }
 
