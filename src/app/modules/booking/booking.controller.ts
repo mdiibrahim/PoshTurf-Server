@@ -1,53 +1,40 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { BookingValidation } from './booking.validation';
 import { BookingServices } from './booking.services';
 import { Types } from 'mongoose';
+import sendResponse from '../../utilis/sendResponse';
+import httpStatus from 'http-status';
+import catchAsync from '../../utilis/catchAsync';
 
-const createBooking = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const bookingData = req.body;
-    const zodParseBookingData =
-      BookingValidation.bookingValidationSchema.parse(bookingData);
-    //convert the productId into mongoDB ObjectId format
-    const bookingDataWithObjectId = {
-      ...zodParseBookingData,
-      facility: new Types.ObjectId(zodParseBookingData.facility),
-    };
-    const result = await BookingServices.createBookingInDB(
-      bookingDataWithObjectId,
-    );
-    res.status(200).json({
-      success: true,
-      statusCode: 200,
-      message: 'Facility added successfully',
-      data: result,
-    });
-  } catch (err) {
-    next(err);
-  }
-};
+const createBooking = catchAsync(async (req: Request, res: Response) => {
+  const bookingData = req.body;
+  const zodParseBookingData =
+    BookingValidation.bookingValidationSchema.parse(bookingData);
+  //convert the productId into mongoDB ObjectId format
+  const bookingDataWithObjectId = {
+    ...zodParseBookingData,
+    facility: new Types.ObjectId(zodParseBookingData.facility),
+  };
+  const result = await BookingServices.createBookingInDB(
+    bookingDataWithObjectId,
+  );
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Facility added successfully',
+    data: result,
+  });
+});
 
-const getAllBookings = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const result = await BookingServices.getAllBookingsFromDB();
-    res.status(200).json({
-      success: true,
-      statusCode: 200,
-      message: 'Bookings retrieved successfully',
-      data: result,
-    });
-  } catch (err) {
-    next(err);
-  }
-};
+const getAllBookings = catchAsync(async (req: Request, res: Response) => {
+  const result = await BookingServices.getAllBookingsFromDB();
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Bookings retrieved successfully',
+    data: result,
+  });
+});
 
 export const BookingControllers = {
   createBooking,

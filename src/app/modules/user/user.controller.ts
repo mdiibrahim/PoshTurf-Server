@@ -1,22 +1,21 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { UserServices } from './user.services';
 import { UserValidation } from './user.validation';
+import sendResponse from '../../utilis/sendResponse';
+import httpStatus from 'http-status';
+import catchAsync from '../../utilis/catchAsync';
 
-const createUser = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const user = req.body;
-    const zodParseUserData = UserValidation.userValidationSchema.parse(user);
-    const result = await UserServices.createUserInDB(zodParseUserData);
-    res.status(200).json({
-      success: true,
-      statusCode: 200,
-      message: 'User registered successfully',
-      data: result,
-    });
-  } catch (err) {
-    next(err);
-  }
-};
+const createUser = catchAsync(async (req: Request, res: Response) => {
+  const user = req.body;
+  const zodParseUserData = UserValidation.userValidationSchema.parse(user);
+  const result = await UserServices.createUserInDB(zodParseUserData);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'User registered successfully',
+    data: result,
+  });
+});
 
 export const UserController = {
   createUser,
