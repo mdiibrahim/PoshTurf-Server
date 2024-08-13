@@ -1,16 +1,12 @@
 import { Request, Response } from 'express';
 import { FacilityServices } from './facility.services';
-import { FacilityValidation } from './facility.validation';
 import sendResponse from '../../utilis/sendResponse';
 import httpStatus from 'http-status';
 import catchAsync from '../../utilis/catchAsync';
 
 const createFacility = catchAsync(async (req: Request, res: Response) => {
   const facility = req.body;
-  const zodParseFacilityData =
-    FacilityValidation.facilityValidationSchema.parse(facility);
-  const result =
-    await FacilityServices.createFacilityInDB(zodParseFacilityData);
+  const result = await FacilityServices.createFacilityInDB(facility);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -30,12 +26,7 @@ const getAllFacilities = catchAsync(async (req: Request, res: Response) => {
 const updateFacility = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const facilityData = req.body;
-  const zodParseUpdatedFacilityData =
-    FacilityValidation.updateFacilityValidationSchema.parse(facilityData);
-  const result = await FacilityServices.updateFacilityInDB(
-    id,
-    zodParseUpdatedFacilityData,
-  );
+  const result = await FacilityServices.updateFacilityInDB(id, facilityData);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
