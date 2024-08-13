@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { UserServices } from './user.services';
 import { UserValidation } from './user.validation';
 
-const createUser = async (req: Request, res: Response) => {
+const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = req.body;
     const zodParseUserData = UserValidation.userValidationSchema.parse(user);
@@ -14,11 +14,7 @@ const createUser = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error!!!',
-      err,
-    });
+    next(err);
   }
 };
 

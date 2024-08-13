@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { IUser } from './user.interface';
+import { IUser, UserModel } from './user.interface';
 import bcrypt from 'bcrypt';
 import config from '../../config';
 
@@ -50,4 +50,8 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-export const User = model<IUser>('User', userSchema);
+userSchema.statics.isUserExists = async function (email: string) {
+  return await User.findOne({ email });
+};
+
+export const User = model<IUser, UserModel>('User', userSchema);

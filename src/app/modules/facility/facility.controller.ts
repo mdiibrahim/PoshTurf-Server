@@ -1,8 +1,12 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { FacilityServices } from './facility.services';
 import { FacilityValidation } from './facility.validation';
 
-const createFacility = async (req: Request, res: Response) => {
+const createFacility = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const facility = req.body;
     const zodParseFacilityData =
@@ -16,14 +20,14 @@ const createFacility = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error!!!',
-      err,
-    });
+    next(err);
   }
 };
-const getAllFacilities = async (req: Request, res: Response) => {
+const getAllFacilities = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const result = await FacilityServices.getAllFacilitiesFromDB();
     res.status(200).json({
@@ -33,14 +37,14 @@ const getAllFacilities = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error!!!',
-      err,
-    });
+    next(err);
   }
 };
-const updateFacility = async (req: Request, res: Response) => {
+const updateFacility = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { id } = req.params;
     const facilityData = req.body;
@@ -57,15 +61,15 @@ const updateFacility = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error!!!',
-      err,
-    });
+    next(err);
   }
 };
 
-const softDeleteFacility = async (req: Request, res: Response) => {
+const softDeleteFacility = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { id } = req.params;
     const result = await FacilityServices.softDeleteFacilityFromDB(id);
@@ -76,11 +80,7 @@ const softDeleteFacility = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error!!!',
-      err,
-    });
+    next(err);
   }
 };
 

@@ -1,9 +1,13 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { BookingValidation } from './booking.validation';
 import { BookingServices } from './booking.services';
 import { Types } from 'mongoose';
 
-const createBooking = async (req: Request, res: Response) => {
+const createBooking = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const bookingData = req.body;
     const zodParseBookingData =
@@ -23,15 +27,15 @@ const createBooking = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error!!!',
-      err,
-    });
+    next(err);
   }
 };
 
-const getAllBookings = async (req: Request, res: Response) => {
+const getAllBookings = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const result = await BookingServices.getAllBookingsFromDB();
     res.status(200).json({
@@ -41,11 +45,7 @@ const getAllBookings = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error!!!',
-      err,
-    });
+    next(err);
   }
 };
 
