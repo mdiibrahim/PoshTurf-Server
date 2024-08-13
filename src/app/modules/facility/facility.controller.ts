@@ -72,7 +72,7 @@ const softDeleteFacility = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       statusCode: 200,
-      message: 'Facility updated successfully',
+      message: 'Facility deleted successfully',
       data: result,
     });
   } catch (err) {

@@ -32,9 +32,30 @@ const createBookingInDB = async (booking: IBooking) => {
     ...booking,
     payableAmount,
   });
+  const bookingWithoutSensitiveFields = {
+    ...result.toObject(),
+    createdAt: undefined,
+    updatedAt: undefined,
+  };
+  return bookingWithoutSensitiveFields;
+};
+
+const getAllBookingsFromDB = async () => {
+  const result = await Booking.find(
+    {},
+    {
+      createdAt: 0,
+      updatedAt: 0,
+    },
+  ).populate('facility');
+  if (!result) {
+    throw new Error('Booking not found!!!');
+  }
+
   return result;
 };
 
 export const BookingServices = {
   createBookingInDB,
+  getAllBookingsFromDB,
 };

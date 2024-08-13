@@ -31,6 +31,25 @@ const createBooking = async (req: Request, res: Response) => {
   }
 };
 
+const getAllBookings = async (req: Request, res: Response) => {
+  try {
+    const result = await BookingServices.getAllBookingsFromDB();
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Bookings retrieved successfully',
+      data: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error!!!',
+      err,
+    });
+  }
+};
+
 export const BookingControllers = {
   createBooking,
+  getAllBookings,
 };

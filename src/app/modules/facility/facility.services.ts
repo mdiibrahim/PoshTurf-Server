@@ -46,9 +46,15 @@ const updateFacilityInDB = async (
 };
 
 const softDeleteFacilityFromDB = async (id: string) => {
-  const result = await Facility.findByIdAndUpdate(id, {
-    isDeleted: true,
-  }).select({
+  const result = await Facility.findByIdAndUpdate(
+    id,
+    {
+      isDeleted: true,
+    },
+    {
+      new: true,
+    },
+  ).select({
     createdAt: 0,
     updatedAt: 0,
   });

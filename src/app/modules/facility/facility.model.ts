@@ -34,4 +34,11 @@ const facilitySchema = new Schema<IFacility>(
   },
 );
 
+facilitySchema.pre('find', function (next) {
+  this.find({
+    isDeleted: false,
+  });
+  next();
+});
+
 export const Facility = model<IFacility>('Facility', facilitySchema);
