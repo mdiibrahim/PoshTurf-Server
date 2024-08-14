@@ -8,6 +8,7 @@ const bookingSchema = new Schema<IBooking>(
       type: Schema.Types.ObjectId,
       ref: 'Facility',
       required: true,
+      trim: true,
     },
     date: {
       type: String,

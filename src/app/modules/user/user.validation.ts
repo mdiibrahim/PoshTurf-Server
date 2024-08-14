@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Role } from './user.constant';
 
-export const userValidationSchema = z.object({
+export const SignUpUserValidationSchema = z.object({
   name: z.string().trim().min(1, 'Name is required.'),
   email: z
     .string()
@@ -19,5 +19,5 @@ export const userValidationSchema = z.object({
 });
 
 export const UserValidation = {
-  userValidationSchema,
+  SignUpUserValidationSchema,
 };

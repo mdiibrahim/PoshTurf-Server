@@ -26,8 +26,29 @@ const getAllBookings = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getAUserBookings = catchAsync(async (req: Request, res: Response) => {
+  const result = await BookingServices.getAUserBookingsFromDB();
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Bookings retrieved successfully',
+    data: result,
+  });
+});
+const cancelBooking = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await BookingServices.cancelBookingFromDB(id);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Facility deleted successfully',
+    data: result,
+  });
+});
 
 export const BookingControllers = {
   createBooking,
   getAllBookings,
+  getAUserBookings,
+  cancelBooking,
 };

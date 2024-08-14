@@ -59,8 +59,38 @@ const getAllBookingsFromDB = async () => {
 
   return result;
 };
+const getAUserBookingsFromDB = async () => {
+  const result = await Booking.find(
+    {},
+    {
+      createdAt: 0,
+      updatedAt: 0,
+    },
+  ).populate('facility');
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Booking not found!!!');
+  }
 
+  return result;
+};
+const cancelBookingFromDB = async (id: string) => {
+  const result = await Booking.findByIdAndUpdate(
+    id,
+    {
+      isBooked: 'canceled',
+    },
+    {
+      new: true,
+    },
+  ).select({
+    createdAt: 0,
+    updatedAt: 0,
+  });
+  return result;
+};
 export const BookingServices = {
   createBookingInDB,
   getAllBookingsFromDB,
+  getAUserBookingsFromDB,
+  cancelBookingFromDB,
 };

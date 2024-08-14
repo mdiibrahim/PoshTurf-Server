@@ -22,7 +22,7 @@ const getAllFacilitiesFromDB = async () => {
       updatedAt: 0,
     },
   );
-  if (!result) {
+  if (!result.length) {
     throw new AppError(httpStatus.NOT_FOUND, 'Facility not found!!!');
   }
 
@@ -33,14 +33,13 @@ const updateFacilityInDB = async (
   id: string,
   facilityData: Partial<IFacility>,
 ) => {
-  const { isDeleted, ...filteredData } = facilityData;
-  if (!isDeleted) {
+  if (facilityData.isDeleted) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       'Facility Cannot delete in this route!!!',
     );
   }
-  const result = await Facility.findByIdAndUpdate(id, filteredData, {
+  const result = await Facility.findByIdAndUpdate(id, facilityData, {
     new: true,
   }).select({
     createdAt: 0,

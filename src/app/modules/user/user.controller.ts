@@ -4,7 +4,7 @@ import sendResponse from '../../utilis/sendResponse';
 import httpStatus from 'http-status';
 import catchAsync from '../../utilis/catchAsync';
 
-const createUser = catchAsync(async (req: Request, res: Response) => {
+const signUpUser = catchAsync(async (req: Request, res: Response) => {
   const user = req.body;
   const result = await UserServices.createUserInDB(user);
   sendResponse(res, {
@@ -16,5 +16,5 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const UserController = {
-  createUser,
+  signUpUser,
 };

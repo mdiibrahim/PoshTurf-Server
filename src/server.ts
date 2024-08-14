@@ -1,18 +1,38 @@
+/* eslint-disable no-console */
+import { Server } from 'http';
+import mongoose from 'mongoose';
 import app from './app';
 import config from './app/config';
 
-import mongoose from 'mongoose';
+let server: Server;
 
 async function main() {
   try {
     await mongoose.connect(config.database_url as string);
-    app.listen(config.port, () => {
+
+    server = app.listen(config.port, () => {
       console.log(
-        `Sports-Facility-Booking-Platform listening on port ${config.port}`,
+        `Sports-Facility-Booking-Platform is listening on port ${config.port}`,
       );
     });
   } catch (err) {
     console.log(err);
   }
 }
+
 main();
+
+process.on('unhandledRejection', () => {
+  console.log(`unahandledRejection is occured , shutting down ...`);
+  if (server) {
+    server.close(() => {
+      process.exit(1);
+    });
+  }
+  process.exit(1);
+});
+
+process.on('uncaughtException', () => {
+  console.log(`uncaughtException is occured , shutting down ...`);
+  process.exit(1);
+});
