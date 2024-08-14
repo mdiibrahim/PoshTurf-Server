@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { IFacility } from './facility.interface';
+import { FacilityModel, IFacility } from './facility.interface';
 
 const facilitySchema = new Schema<IFacility>(
   {
@@ -29,7 +29,7 @@ const facilitySchema = new Schema<IFacility>(
     },
   },
   {
-    timestamps: true,
+    timestamps: false,
     versionKey: false,
   },
 );
@@ -41,4 +41,11 @@ facilitySchema.pre('find', function (next) {
   next();
 });
 
-export const Facility = model<IFacility>('Facility', facilitySchema);
+facilitySchema.statics.isFacilityExists = async function (name: string) {
+  return await Facility.findOne({ name });
+};
+
+export const Facility = model<IFacility, FacilityModel>(
+  'Facility',
+  facilitySchema,
+);

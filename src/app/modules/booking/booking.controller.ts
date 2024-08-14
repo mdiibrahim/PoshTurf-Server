@@ -8,11 +8,12 @@ import catchAsync from '../../utilis/catchAsync';
 
 const createBooking = catchAsync(async (req: Request, res: Response) => {
   const bookingData = req.body;
-  const result = await BookingServices.createBookingInDB(bookingData);
+  const user = req.user;
+  const result = await BookingServices.createBookingInDB(bookingData, user);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: 'Facility added successfully',
+    message: 'Booking created successfully',
     data: result,
   });
 });
@@ -27,7 +28,7 @@ const getAllBookings = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const getAUserBookings = catchAsync(async (req: Request, res: Response) => {
-  const result = await BookingServices.getAUserBookingsFromDB();
+  const result = await BookingServices.getAUserBookingsFromDB(req.user);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -41,7 +42,7 @@ const cancelBooking = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: 'Facility deleted successfully',
+    message: 'Booking cancelled successfully',
     data: result,
   });
 });

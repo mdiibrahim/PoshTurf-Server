@@ -31,11 +31,23 @@ const bookingSchema = new Schema<IBooking>(
       enum: isBooking,
       default: 'confirmed',
     },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
   },
   {
     versionKey: false,
-    timestamps: true,
+    timestamps: false,
   },
 );
+
+bookingSchema.pre('find', function (next) {
+  this.find({
+    isBooked: 'confirmed',
+  });
+  next();
+});
 
 export const Booking = model<IBooking>('Booking', bookingSchema);

@@ -3,9 +3,15 @@ import AppError from '../../errors/AppError';
 import { Facility } from '../facility/facility.model';
 import { IBooking } from './booking.interface';
 import { Booking } from './booking.model';
+import { User } from '../user/user.model';
+import { JwtPayload } from 'jsonwebtoken';
 
-const createBookingInDB = async (booking: IBooking) => {
+const createBookingInDB = async (booking: IBooking, payload: JwtPayload) => {
   const { facility, date, startTime, endTime } = booking;
+  const user = await User.isUserExists(payload.email);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+  }
   // Fetch the facility to get the pricePerHour
   const facilityData = await Facility.findById(facility);
   if (!facilityData) {
@@ -35,38 +41,26 @@ const createBookingInDB = async (booking: IBooking) => {
   // Create booking
   const result = await Booking.create({
     ...booking,
+    user: user._id,
     payableAmount,
   });
-  const bookingWithoutSensitiveFields = {
-    ...result.toObject(),
-    createdAt: undefined,
-    updatedAt: undefined,
-  };
-  return bookingWithoutSensitiveFields;
+  return result;
 };
 
 const getAllBookingsFromDB = async () => {
-  const result = await Booking.find(
-    {},
-    {
-      createdAt: 0,
-      updatedAt: 0,
-    },
-  ).populate('facility');
-  if (!result) {
+  const result = await Booking.find({})
+    .populate('facility')
+    .populate('user')
+    .lean();
+  if (!result || result.length === 0) {
     throw new AppError(httpStatus.NOT_FOUND, 'Booking not found!!!');
   }
 
   return result;
 };
-const getAUserBookingsFromDB = async () => {
-  const result = await Booking.find(
-    {},
-    {
-      createdAt: 0,
-      updatedAt: 0,
-    },
-  ).populate('facility');
+const getAUserBookingsFromDB = async (payload: JwtPayload) => {
+  const { _id } = payload;
+  const result = await Booking.find({ user: _id }).populate('facility');
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Booking not found!!!');
   }
@@ -82,10 +76,7 @@ const cancelBookingFromDB = async (id: string) => {
     {
       new: true,
     },
-  ).select({
-    createdAt: 0,
-    updatedAt: 0,
-  });
+  ).populate('facility');
   return result;
 };
 export const BookingServices = {

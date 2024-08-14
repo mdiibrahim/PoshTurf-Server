@@ -4,26 +4,21 @@ import { IFacility } from './facility.interface';
 import { Facility } from './facility.model';
 
 const createFacilityInDB = async (facility: IFacility) => {
+  const existingFacility = await Facility.isFacilityExists(facility.name);
+  if (existingFacility) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Facility with same name already exists!!!',
+    );
+  }
   const result = await Facility.create(facility);
-
-  const facilityWithoutSensitiveFields = {
-    ...result.toObject(),
-    createdAt: undefined,
-    updatedAt: undefined,
-  };
-  return facilityWithoutSensitiveFields;
+  return result;
 };
 
 const getAllFacilitiesFromDB = async () => {
-  const result = await Facility.find(
-    {},
-    {
-      createdAt: 0,
-      updatedAt: 0,
-    },
-  );
+  const result = await Facility.find({});
   if (!result.length) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Facility not found!!!');
+    throw new AppError(httpStatus.NOT_FOUND, 'Facilities not found!!!');
   }
 
   return result;
@@ -41,9 +36,6 @@ const updateFacilityInDB = async (
   }
   const result = await Facility.findByIdAndUpdate(id, facilityData, {
     new: true,
-  }).select({
-    createdAt: 0,
-    updatedAt: 0,
   });
 
   return result;

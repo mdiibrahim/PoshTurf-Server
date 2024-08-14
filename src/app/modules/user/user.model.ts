@@ -19,6 +19,7 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: [true, 'Password is required.'],
       minlength: [6, 'Password must be at least 6 characters long.'],
+      select: 0,
     },
     phone: {
       type: String,
@@ -38,7 +39,7 @@ const userSchema = new Schema<IUser>(
   },
   {
     versionKey: false,
-    timestamps: true,
+    timestamps: false,
   },
 );
 
@@ -49,9 +50,13 @@ userSchema.pre('save', async function (next) {
   );
   next();
 });
+userSchema.post('save', function (doc, next) {
+  doc.password = ' ';
+  next();
+});
 
 userSchema.statics.isUserExists = async function (email: string) {
-  return await User.findOne({ email });
+  return await User.findOne({ email }).select('+password');
 };
 
 userSchema.statics.isPasswordMatched = async function (

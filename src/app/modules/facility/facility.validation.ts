@@ -9,8 +9,6 @@ const facilityValidationSchema = z.object({
     .nonnegative('Price per hour must be a positive number.'),
   location: z.string().trim().min(3, 'Location is required.'),
   isDeleted: z.boolean().optional().default(false),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
 });
 
 const updateFacilityValidationSchema = facilityValidationSchema

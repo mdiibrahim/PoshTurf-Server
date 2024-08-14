@@ -10,14 +10,7 @@ const createUserInDB = async (user: IUser) => {
   }
   const result = await User.create(user);
 
-  const userWithoutSensitiveFields = {
-    ...result.toObject(),
-    createdAt: undefined,
-    updatedAt: undefined,
-    password: undefined,
-  };
-
-  return userWithoutSensitiveFields;
+  return result;
 };
 
 export const UserServices = {

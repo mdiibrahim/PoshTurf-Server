@@ -8,18 +8,28 @@ import { createToken } from '../../utilis/createToken';
 
 const loginUser = async (payload: ILogInUser) => {
   const user = await User.isUserExists(payload.email);
+
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
   }
-
   if (!(await User.isPasswordMatched(payload?.password, user?.password)))
     throw new AppError(httpStatus.FORBIDDEN, 'Password do not matched');
 
   const jwtPayload = {
     email: user.email,
     role: user.role,
+    _id: user._id,
   };
-
+  const result = await User.findById(user?._id);
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+  }
+  const userWithoutSensitiveFields = {
+    ...result.toObject(),
+    createdAt: undefined,
+    updatedAt: undefined,
+    password: undefined,
+  };
   const accessToken = createToken(
     jwtPayload,
     config.jwt_access_secret as string,
@@ -35,7 +45,7 @@ const loginUser = async (payload: ILogInUser) => {
   return {
     accessToken,
     refreshToken,
-    user,
+    userWithoutSensitiveFields,
   };
 };
 
@@ -57,6 +67,7 @@ const refreshToken = async (token: string) => {
   const jwtPayload = {
     email: user.email,
     role: user.role,
+    _id: user._id,
   };
 
   const accessToken = createToken(
