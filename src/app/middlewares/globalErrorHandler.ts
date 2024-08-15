@@ -7,6 +7,7 @@ import AppError from '../errors/AppError';
 import config from '../config';
 import { ZodError } from 'zod';
 import handleZodError from '../errors/handleZodError';
+import httpStatus from 'http-status';
 
 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
@@ -57,7 +58,21 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
       },
     ];
   }
-
+  if (err?.statusCode === httpStatus.NOT_FOUND) {
+    return res.status(statusCode).json({
+      success: false,
+      statusCode,
+      message,
+      data: [],
+    });
+  }
+  if (err?.statusCode === httpStatus.UNAUTHORIZED) {
+    return res.status(statusCode).json({
+      success: false,
+      statusCode,
+      message,
+    });
+  }
   return res.status(statusCode).json({
     success: false,
     message,

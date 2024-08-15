@@ -18,7 +18,7 @@ export default function getAvailableTimeSlots(
         return [slot];
       }
 
-      // Overlap at the start of the available slot
+      // Overlap at start of the available slot
       if (booked.startTime <= slot.startTime && booked.endTime < slot.endTime) {
         return [{ startTime: booked.endTime, endTime: slot.endTime }];
       }
@@ -28,7 +28,7 @@ export default function getAvailableTimeSlots(
         return [{ startTime: slot.startTime, endTime: booked.startTime }];
       }
 
-      // Booked slot is within the available slot (splitting it into two)
+      // Booked slot is within the available slot
       if (booked.startTime > slot.startTime && booked.endTime < slot.endTime) {
         return [
           { startTime: slot.startTime, endTime: booked.startTime },
@@ -36,7 +36,7 @@ export default function getAvailableTimeSlots(
         ];
       }
 
-      // Booked slot completely overlaps the available slot (removes the slot)
+      // Booked slot completely
       return [];
     });
   });

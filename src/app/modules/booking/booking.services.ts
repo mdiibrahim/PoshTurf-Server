@@ -5,17 +5,18 @@ import { IBooking } from './booking.interface';
 import { Booking } from './booking.model';
 import { User } from '../user/user.model';
 import { JwtPayload } from 'jsonwebtoken';
+import getAvailableTimeSlots from './booking.utils';
 
 const createBookingInDB = async (booking: IBooking, payload: JwtPayload) => {
   const { facility, date, startTime, endTime } = booking;
   const user = await User.isUserExists(payload.email);
   if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+    throw new AppError(httpStatus.NOT_FOUND, 'No Data Found');
   }
   // Fetch the facility to get the pricePerHour
   const facilityData = await Facility.findById(facility);
   if (!facilityData) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Facility not found!!!');
+    throw new AppError(httpStatus.NOT_FOUND, 'No Data Found');
   }
   // Check for conflicting bookings
   const existingBooking = await Booking.findOne({
@@ -53,7 +54,7 @@ const getAllBookingsFromDB = async () => {
     .populate('user')
     .lean();
   if (!result || result.length === 0) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Booking not found!!!');
+    throw new AppError(httpStatus.NOT_FOUND, 'No Data Found');
   }
 
   return result;
@@ -62,7 +63,7 @@ const getAUserBookingsFromDB = async (payload: JwtPayload) => {
   const { _id } = payload;
   const result = await Booking.find({ user: _id }).populate('facility');
   if (!result) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Booking not found!!!');
+    throw new AppError(httpStatus.NOT_FOUND, 'No Data Found');
   }
 
   return result;
@@ -80,51 +81,6 @@ const cancelBookingFromDB = async (id: string) => {
   return result;
 };
 
-function getAvailableTimeSlots(
-  bookedSlots: Array<{ startTime: string; endTime: string }>,
-): Array<{ startTime: string; endTime: string }> {
-  const openingTime = '00:00';
-  const closingTime = '23:59';
-
-  // Initialize with one big slot for 24 hours
-  let availableSlots = [{ startTime: openingTime, endTime: closingTime }];
-
-  // Loop through each booked slot and adjust the available slots
-  bookedSlots.forEach((booked) => {
-    availableSlots = availableSlots.flatMap((slot) => {
-      // No overlap
-      if (
-        booked.endTime <= slot.startTime ||
-        booked.startTime >= slot.endTime
-      ) {
-        return [slot];
-      }
-
-      // Overlap at the start of the available slot
-      if (booked.startTime <= slot.startTime && booked.endTime < slot.endTime) {
-        return [{ startTime: booked.endTime, endTime: slot.endTime }];
-      }
-
-      // Overlap at the end of the available slot
-      if (booked.startTime > slot.startTime && booked.endTime >= slot.endTime) {
-        return [{ startTime: slot.startTime, endTime: booked.startTime }];
-      }
-
-      // Booked slot is within the available slot (splitting it into two)
-      if (booked.startTime > slot.startTime && booked.endTime < slot.endTime) {
-        return [
-          { startTime: slot.startTime, endTime: booked.startTime },
-          { startTime: booked.endTime, endTime: slot.endTime },
-        ];
-      }
-
-      // Booked slot completely overlaps the available slot (removes the slot)
-      return [];
-    });
-  });
-
-  return availableSlots;
-}
 const checkAvailabileTimeSlotsFromDB = async (date: string) => {
   const selectedDate = date ? date : new Date().toISOString().split('T')[0];
 

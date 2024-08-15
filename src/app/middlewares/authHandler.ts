@@ -27,7 +27,7 @@ const auth = (...requiredRoles: IRole[]) => {
     const user = await User.isUserExists(email);
 
     if (!user) {
-      throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+      throw new AppError(httpStatus.NOT_FOUND, 'No Data Found !');
     }
 
     if (requiredRoles && !requiredRoles.includes(role)) {

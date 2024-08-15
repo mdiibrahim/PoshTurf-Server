@@ -18,7 +18,7 @@ const createFacilityInDB = async (facility: IFacility) => {
 const getAllFacilitiesFromDB = async () => {
   const result = await Facility.find({});
   if (!result.length) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Facilities not found!!!');
+    throw new AppError(httpStatus.NOT_FOUND, 'No Data Found');
   }
 
   return result;
