@@ -50,9 +50,11 @@ userSchema.pre('save', async function (next) {
   );
   next();
 });
-userSchema.post('save', function (doc, next) {
-  doc.password = ' ';
-  next();
+userSchema.set('toJSON', {
+  transform: function (doc, ret) {
+    delete ret.password;
+    return ret;
+  },
 });
 
 userSchema.statics.isUserExists = async function (email: string) {
