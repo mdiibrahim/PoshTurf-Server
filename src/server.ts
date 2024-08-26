@@ -12,7 +12,7 @@ async function main() {
 
     server = app.listen(config.port, () => {
       console.log(
-        `Sports-Facility-Booking-Platform is listening on port ${config.port}`,
+        `poshturf-server is listening on port ${config.port}`,
       );
     });
   } catch (err) {

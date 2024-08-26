@@ -17,7 +17,7 @@ app.use(globalErrorHandler);
 
 //root route
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello Sports-Facility-Booking-Platform!');
+  res.send('Hello poshturf-server!');
 });
 
 //not found route
