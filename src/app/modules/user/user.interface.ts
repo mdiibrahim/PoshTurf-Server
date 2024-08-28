@@ -8,7 +8,7 @@ export interface IUser {
   email: string;
   password: string;
   phone: string;
-  role: IRole;
+  role?: IRole;
   address: string;
 }
 

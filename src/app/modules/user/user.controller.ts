@@ -14,7 +14,17 @@ const signUpUser = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getAUserDetails = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserServices.getAUserDetailsFromDB(req.user);
 
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'User retrieved successfully',
+    data: result,
+  });
+});
 export const UserController = {
   signUpUser,
+  getAUserDetails,
 };

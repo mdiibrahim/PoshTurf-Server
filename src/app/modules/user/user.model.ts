@@ -31,6 +31,8 @@ const userSchema = new Schema<IUser>(
         values: ['admin', 'user'],
         message: 'Role must be either "admin" or "user".',
       },
+      default: 'user',
+      required: false,
     },
     address: {
       type: String,

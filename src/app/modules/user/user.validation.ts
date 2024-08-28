@@ -12,9 +12,11 @@ export const SignUpUserValidationSchema = z.object({
     .string()
     .length(11, 'Phone number must be exactly 11 digits.')
     .regex(/^\d{11}$/, 'Phone number must contain only digits.'),
-  role: z.enum([...Role] as [string, ...string[]], {
-    errorMap: () => ({ message: 'Role must be either "admin" or "user".' }),
-  }),
+  role: z
+    .enum([...Role] as [string, ...string[]], {
+      errorMap: () => ({ message: 'Role must be either "admin" or "user".' }),
+    })
+    .optional(),
   address: z.string().min(1, 'Address is required.'),
 });
 
