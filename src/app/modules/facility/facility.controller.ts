@@ -23,6 +23,16 @@ const getAllFacilities = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getAFacility = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await FacilityServices.getAFacilityFromDB(id);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Facilities retrieved successfully',
+    data: result,
+  });
+});
 const updateFacility = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const facilityData = req.body;
@@ -51,4 +61,5 @@ export const FacilityController = {
   getAllFacilities,
   updateFacility,
   softDeleteFacility,
+  getAFacility,
 };

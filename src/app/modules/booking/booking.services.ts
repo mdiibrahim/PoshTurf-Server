@@ -61,7 +61,9 @@ const getAllBookingsFromDB = async () => {
 };
 const getAUserBookingsFromDB = async (payload: JwtPayload) => {
   const { _id } = payload;
-  const result = await Booking.find({ user: _id }).populate('facility');
+  const result = await Booking.find({ user: _id })
+    .populate('facility')
+    .populate('user');
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'No Data Found');
   }
@@ -81,11 +83,18 @@ const cancelBookingFromDB = async (id: string) => {
   return result;
 };
 
-const checkAvailabileTimeSlotsFromDB = async (date: string) => {
+// This function retrieves available time slots for a specific facility on a specific date.
+const checkAvailabileTimeSlotsFromDB = async (
+  date: string,
+  facilityId: string,
+) => {
   const selectedDate = date ? date : new Date().toISOString().split('T')[0];
 
-  // Retrieve bookings from the database for the specified date
-  const bookings = await Booking.find({ date: selectedDate });
+  // Retrieve bookings from the database for the specified facility and date
+  const bookings = await Booking.find({
+    date: selectedDate,
+    facility: facilityId,
+  });
 
   // Extract the booked time slots
   const bookedSlots = bookings.map((booking) => ({

@@ -23,6 +23,10 @@ const facilitySchema = new Schema<IFacility>(
       required: [true, 'Location is required.'],
       trim: true,
     },
+    image: {
+      type: String,
+      required: [true, 'Image Link is required.'],
+    },
     isDeleted: {
       type: Boolean,
       default: false,

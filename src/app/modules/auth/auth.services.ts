@@ -1,3 +1,4 @@
+import { IJwtPayload } from './../../utilis/createToken';
 import httpStatus from 'http-status';
 import config from '../../config';
 import AppError from '../../errors/AppError';
@@ -18,7 +19,7 @@ const loginUser = async (payload: ILogInUser) => {
     email: user.email,
     role: user.role,
     _id: user._id,
-  };
+  } as IJwtPayload;
 
   const accessToken = createToken(
     jwtPayload,

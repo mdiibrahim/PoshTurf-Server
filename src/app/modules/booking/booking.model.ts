@@ -29,7 +29,7 @@ const bookingSchema = new Schema<IBooking>(
     isBooked: {
       type: String,
       enum: isBooking,
-      default: 'confirmed',
+      default: 'pending',
     },
     user: {
       type: Schema.Types.ObjectId,
@@ -45,7 +45,7 @@ const bookingSchema = new Schema<IBooking>(
 
 bookingSchema.pre('find', function (next) {
   this.find({
-    isBooked: 'confirmed',
+    isBooked: ['confirmed', 'pending'],
   });
   next();
 });

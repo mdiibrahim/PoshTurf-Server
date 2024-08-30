@@ -23,6 +23,14 @@ const getAllFacilitiesFromDB = async () => {
 
   return result;
 };
+const getAFacilityFromDB = async (id: string) => {
+  const result = await Facility.findById({ _id: id });
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'No Data Found');
+  }
+
+  return result;
+};
 
 const updateFacilityInDB = async (
   id: string,
@@ -62,4 +70,5 @@ export const FacilityServices = {
   getAllFacilitiesFromDB,
   updateFacilityInDB,
   softDeleteFacilityFromDB,
+  getAFacilityFromDB,
 };

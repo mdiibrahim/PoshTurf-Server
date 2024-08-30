@@ -20,5 +20,6 @@ router.put(
 );
 router.delete('/:id', auth('admin'), FacilityController.softDeleteFacility);
 router.get('/', FacilityController.getAllFacilities);
+router.get('/:id', FacilityController.getAFacility);
 
 export const FacilityRoutes = router;

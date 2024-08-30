@@ -50,7 +50,19 @@ const cancelBooking = catchAsync(async (req: Request, res: Response) => {
 const checkAvailabileTimeSlots = catchAsync(
   async (req: Request, res: Response) => {
     const date = req.query.date as string;
-    const result = await BookingServices.checkAvailabileTimeSlotsFromDB(date);
+    const facilityId = req.query.facility as string;
+
+    if (!facilityId) {
+      return res.status(httpStatus.BAD_REQUEST).send({
+        success: false,
+        message: 'Facility ID is required',
+      });
+    }
+
+    const result = await BookingServices.checkAvailabileTimeSlotsFromDB(
+      date,
+      facilityId,
+    );
     sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,

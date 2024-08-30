@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-export type IIsBooking = 'confirmed' | 'canceled';
+export type IIsBooking = 'confirmed' | 'pending' | 'canceled';
 export interface IBooking {
   _id?: Types.ObjectId;
   facility: Types.ObjectId;

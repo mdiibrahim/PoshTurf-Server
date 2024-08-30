@@ -12,6 +12,7 @@ router.post(
   validateRequest(UserValidation.SignUpUserValidationSchema),
   UserController.signUpUser,
 );
+
 router.post(
   '/login',
   validateRequest(AuthValidation.logInUserValidationSchema),

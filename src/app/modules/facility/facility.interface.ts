@@ -5,6 +5,7 @@ export interface IFacility {
   description: string;
   pricePerHour: number;
   location: string;
+  image: string;
   isDeleted?: boolean;
 }
 export interface FacilityModel extends Model<IFacility> {
