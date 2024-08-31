@@ -31,6 +31,10 @@ const facilitySchema = new Schema<IFacility>(
       type: Boolean,
       default: false,
     },
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: false,

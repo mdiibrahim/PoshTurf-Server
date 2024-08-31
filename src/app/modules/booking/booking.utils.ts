@@ -1,45 +1,31 @@
+/* eslint-disable prefer-const */
 export default function getAvailableTimeSlots(
   bookedSlots: Array<{ startTime: string; endTime: string }>,
 ): Array<{ startTime: string; endTime: string }> {
   const openingTime = '00:00';
   const closingTime = '23:59';
 
-  // Initialize with one big slot for 24 hours
-  let availableSlots = [{ startTime: openingTime, endTime: closingTime }];
+  // Split the day into 1-hour slots
+  const slots = [];
+  let currentTime = new Date(`1970-01-01T${openingTime}:00`);
+  const endTime = new Date(`1970-01-01T${closingTime}:00`);
 
-  // Loop through each booked slot and adjust the available slots
-  bookedSlots.forEach((booked) => {
-    availableSlots = availableSlots.flatMap((slot) => {
-      // No overlap
-      if (
-        booked.endTime <= slot.startTime ||
-        booked.startTime >= slot.endTime
-      ) {
-        return [slot];
-      }
+  while (currentTime < endTime) {
+    const startTimeStr = currentTime.toTimeString().slice(0, 5);
+    currentTime.setHours(currentTime.getHours() + 1);
+    const endTimeStr = currentTime.toTimeString().slice(0, 5);
 
-      // Overlap at start of the available slot
-      if (booked.startTime <= slot.startTime && booked.endTime < slot.endTime) {
-        return [{ startTime: booked.endTime, endTime: slot.endTime }];
-      }
-
-      // Overlap at the end of the available slot
-      if (booked.startTime > slot.startTime && booked.endTime >= slot.endTime) {
-        return [{ startTime: slot.startTime, endTime: booked.startTime }];
-      }
-
-      // Booked slot is within the available slot
-      if (booked.startTime > slot.startTime && booked.endTime < slot.endTime) {
-        return [
-          { startTime: slot.startTime, endTime: booked.startTime },
-          { startTime: booked.endTime, endTime: slot.endTime },
-        ];
-      }
-
-      // Booked slot completely
-      return [];
+    slots.push({
+      startTime: startTimeStr,
+      endTime: endTimeStr === '00:00' ? '23:59' : endTimeStr, // Ensure last slot is till 23:59
     });
-  });
+  }
 
-  return availableSlots;
+  // Filter out booked slots
+  return slots.filter((slot) => {
+    return !bookedSlots.some(
+      (booked) =>
+        booked.startTime < slot.endTime && booked.endTime > slot.startTime,
+    );
+  });
 }

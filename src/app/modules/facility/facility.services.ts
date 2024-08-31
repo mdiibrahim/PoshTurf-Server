@@ -23,6 +23,14 @@ const getAllFacilitiesFromDB = async () => {
 
   return result;
 };
+const getAllFeaturedFacilitiesFromDB = async () => {
+  const result = await Facility.find({ isFeatured: 'true' });
+  if (!result.length) {
+    throw new AppError(httpStatus.NOT_FOUND, 'No Data Found');
+  }
+
+  return result;
+};
 const getAFacilityFromDB = async (id: string) => {
   const result = await Facility.findById({ _id: id });
   if (!result) {
@@ -71,4 +79,5 @@ export const FacilityServices = {
   updateFacilityInDB,
   softDeleteFacilityFromDB,
   getAFacilityFromDB,
+  getAllFeaturedFacilitiesFromDB,
 };

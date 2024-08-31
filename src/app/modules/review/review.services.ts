@@ -36,8 +36,17 @@ const getAFacilityReviewsFromDB = async (facility: string) => {
 
   return result;
 };
+const getAllFacilitiesReviewsFromDB = async () => {
+  const result = await Review.find({}).populate('user').populate('facility');
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'No Data Found');
+  }
+
+  return result;
+};
 
 export const ReviewServices = {
   createReviewInDB,
   getAFacilityReviewsFromDB,
+  getAllFacilitiesReviewsFromDB,
 };

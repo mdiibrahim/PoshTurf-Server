@@ -27,8 +27,20 @@ const getAFacilityReviews = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getAllFacilitiesReviews = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await ReviewServices.getAllFacilitiesReviewsFromDB();
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'Reviews retrieved successfully',
+      data: result,
+    });
+  },
+);
 
 export const ReviewControllers = {
   getAFacilityReviews,
   createReview,
+  getAllFacilitiesReviews,
 };

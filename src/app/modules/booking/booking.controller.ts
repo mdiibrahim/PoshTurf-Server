@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
-
 import { BookingServices } from './booking.services';
-
 import sendResponse from '../../utilis/sendResponse';
 import httpStatus from 'http-status';
 import catchAsync from '../../utilis/catchAsync';
@@ -36,6 +34,18 @@ const getAUserBookings = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getAUserSingleBooking = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await BookingServices.getAUserSingleBookingFromDB(id);
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'Booking retrieved successfully',
+      data: result,
+    });
+  },
+);
 const cancelBooking = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await BookingServices.cancelBookingFromDB(id);
@@ -78,4 +88,5 @@ export const BookingControllers = {
   getAUserBookings,
   cancelBooking,
   checkAvailabileTimeSlots,
+  getAUserSingleBooking,
 };

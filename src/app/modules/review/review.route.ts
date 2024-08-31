@@ -7,6 +7,7 @@ import { ReviewControllers } from './review.controller';
 
 const router = express.Router();
 
+router.get('/', ReviewControllers.getAllFacilitiesReviews);
 router.post(
   '/',
   auth('user'),

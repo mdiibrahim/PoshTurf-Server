@@ -10,6 +10,7 @@ const facilityValidationSchema = z.object({
   location: z.string().trim().min(3, 'Location is required.'),
   image: z.string().trim().min(3, 'Image Link is required.'),
   isDeleted: z.boolean().optional().default(false),
+  isFeatured: z.boolean().optional().default(false),
 });
 
 const updateFacilityValidationSchema = facilityValidationSchema

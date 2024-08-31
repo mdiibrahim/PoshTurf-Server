@@ -7,6 +7,7 @@ export interface IFacility {
   location: string;
   image: string;
   isDeleted?: boolean;
+  isFeatured?: boolean;
 }
 export interface FacilityModel extends Model<IFacility> {
   isFacilityExists(name: string): Promise<IFacility> | null;

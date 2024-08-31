@@ -1,6 +1,17 @@
 import { Schema, model } from 'mongoose';
-import { IBooking } from './booking.interface';
+import { IBooking, ITimeSlot } from './booking.interface';
 import { isBooking } from './booking.constant';
+
+const timeSlotSchema = new Schema<ITimeSlot>({
+  startTime: {
+    type: String,
+    required: true,
+  },
+  endTime: {
+    type: String,
+    required: true,
+  },
+});
 
 const bookingSchema = new Schema<IBooking>(
   {
@@ -8,19 +19,15 @@ const bookingSchema = new Schema<IBooking>(
       type: Schema.Types.ObjectId,
       ref: 'Facility',
       required: true,
-      trim: true,
     },
     date: {
       type: String,
       required: true,
     },
-    startTime: {
-      type: String,
+    timeSlots: {
+      type: [timeSlotSchema],
       required: true,
-    },
-    endTime: {
-      type: String,
-      required: true,
+      _id: false,
     },
     payableAmount: {
       type: Number,
