@@ -27,6 +27,7 @@ export const bookingValidationSchema = z
       .array(timeSlotValidationSchema)
       .min(1, 'At least one time slot is required'),
     payableAmount: z.number().optional(),
+    transactionId: z.string().optional(),
     isBooked: z
       .enum([...isBooking] as [string, ...string[]])
       .default('confirmed'),

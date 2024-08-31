@@ -14,4 +14,5 @@ export interface IBooking {
   payableAmount?: number;
   isBooked?: IIsBooking;
   user: Types.ObjectId;
+  transactionId?: string;
 }

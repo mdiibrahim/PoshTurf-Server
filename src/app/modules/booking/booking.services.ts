@@ -62,7 +62,6 @@ const createBookingInDB = async (
     timeSlots,
     user: user._id,
     payableAmount,
-    isBooked: 'pending',
   });
 
   return booking;

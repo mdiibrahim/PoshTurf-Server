@@ -1,18 +1,46 @@
-import { join } from 'path';
-import { verifyPayment } from './payment.utils';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { readFileSync } from 'fs';
+import { join } from 'path';
 import { Booking } from '../booking/booking.model';
+import { initiatePayment, verifyPayment } from './payment.utils';
+import AppError from '../../errors/AppError';
+import httpStatus from 'http-status';
+
+const initiatePaymentToDB = async (paymentData: any) => {
+  try {
+    const result = await initiatePayment(paymentData);
+    if (result.result) {
+      await Booking.findByIdAndUpdate(
+        paymentData.bookingId,
+        {
+          transactionId: paymentData.transactionId,
+        },
+        {
+          new: true,
+        },
+      );
+    }
+    return result.payment_url;
+  } catch (error) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Payment initiation failed.',
+    );
+  }
+};
 
 const confirmationService = async (transactionId: string) => {
   const verifyResponse = await verifyPayment(transactionId);
-  let result;
   let message = '';
 
-  if (verifyResponse && verifyResponse.pay_status === 'Successful') {
-    result = await Booking.findOneAndUpdate(
+  if (verifyResponse.pay_status === 'Successful') {
+    await Booking.findOneAndUpdate(
       { transactionId },
       {
-        paymentStatus: 'Paid',
+        paymentStatus: 'paid',
+        isBooked: 'confirmed',
       },
     );
     message = 'Successfully Paid!';
@@ -20,14 +48,32 @@ const confirmationService = async (transactionId: string) => {
     message = 'Payment Failed!';
   }
 
-  const filePath = join(__dirname, '../../utilis/confirmation.html');
+  // eslint-disable-next-line no-undef
+  const filePath = join(__dirname, '../../../app/view/confirmation.html');
   let template = readFileSync(filePath, 'utf-8');
-
   template = template.replace('{{message}}', message);
 
-  return template;
+  return message;
 };
 
-export const paymentServices = {
+const failedService = async (transactionId: string) => {
+  const updatedBooking = await Booking.findOneAndUpdate(
+    { transactionId },
+    {
+      isBooked: 'pending',
+    },
+    { new: true },
+  );
+
+  if (!updatedBooking) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Booking not found');
+  }
+
+  return updatedBooking;
+};
+
+export const PaymentServices = {
+  initiatePaymentToDB,
   confirmationService,
+  failedService,
 };

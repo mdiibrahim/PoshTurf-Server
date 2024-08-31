@@ -1,51 +1,58 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import config from '../../config';
+import { Booking } from '../booking/booking.model';
+import AppError from '../../errors/AppError';
+import httpStatus from 'http-status';
 
 export const initiatePayment = async (paymentData: any) => {
   try {
-    const response = await axios.post(process.env.PAYMENT_URL!, {
-      store_id: process.env.STORE_ID,
-      signature_key: process.env.SIGNETURE_KEY,
+    const response = await axios.post(config.aamar_pay_url as string, {
+      store_id: config.aamar_pay_store_id,
+      signature_key: config.aamar_pay_signature_id,
       tran_id: paymentData.transactionId,
-      success_url: `http://localhost:3000/api/v1/payment/confirmation?transactionId=${paymentData.transactionId}&status=success`,
-      fail_url: `http://localhost:3000/api/v1/payment/confirmation?status=failed`,
-      cancel_url: 'http://localhost:5173/',
+      success_url: `http://localhost:5000/api/payment/success?transactionId=${paymentData.transactionId}&status=success`,
+      fail_url: `http://localhost:5000/api/payment/fail?status=failed`,
+      cancel_url: `http://localhost:5173/`,
       amount: paymentData.totalPrice,
       currency: 'BDT',
-      desc: 'Merchant Registration Payment',
-      cus_name: paymentData.custormerName,
+      cus_name: paymentData.customerName,
       cus_email: paymentData.customerEmail,
       cus_add1: paymentData.customerAddress,
-      cus_add2: 'N/A',
-      cus_city: 'N/A',
-      cus_state: 'N/A',
-      cus_postcode: 'N/A',
-      cus_country: 'N/A',
       cus_phone: paymentData.customerPhone,
+      desc: 'Facility Booking Payment',
       type: 'json',
     });
 
-    return response.data;
-  } catch (err) {
-    throw new Error('Payment initiation failed!');
+    if (response.data.result) {
+      return response.data;
+    } else {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Payment initiation failed');
+    }
+  } catch (error) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Payment initiation failed. ',
+    );
   }
 };
 
-export const verifyPayment = async (tnxId: string) => {
+export const verifyPayment = async (transactionId: string) => {
   try {
-    const response = await axios.get(process.env.PAYMENT_VERIFY_URL!, {
+    // Send a request to Aamarpay's payment verification API
+    const response = await axios.get(config.aamar_pay_verify_url as string, {
       params: {
-        store_id: process.env.STORE_ID,
-        signature_key: process.env.SIGNETURE_KEY,
+        store_id: config.aamar_pay_store_id,
+        signature_key: config.aamar_pay_signature_id,
         type: 'json',
-        request_id: tnxId,
+        request_id: transactionId,
       },
     });
 
     return response.data;
   } catch (err) {
-    throw new Error('Payment validation failed!');
+    throw new AppError(httpStatus.BAD_REQUEST, 'Payment verification failed!');
   }
 };

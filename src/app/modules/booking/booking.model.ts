@@ -33,6 +33,11 @@ const bookingSchema = new Schema<IBooking>(
       type: Number,
       required: false,
     },
+    transactionId: {
+      type: String,
+      required: false,
+    },
+
     isBooked: {
       type: String,
       enum: isBooking,
