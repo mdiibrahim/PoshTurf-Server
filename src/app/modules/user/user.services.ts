@@ -13,6 +13,24 @@ const createUserInDB = async (user: IUser) => {
 
   return result;
 };
+const createAdminInDB = async (user: IUser, payload: JwtPayload) => {
+  const existingUser = await User.isUserExists(payload.email);
+
+  if (!existingUser) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User Not Found');
+  }
+  if (payload.role != 'admin') {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'You are authorized!');
+  }
+  const userData = {
+    ...user,
+    role: payload.role,
+  };
+
+  const result = await User.create(userData);
+
+  return result;
+};
 const getAUserDetailsFromDB = async (payload: JwtPayload) => {
   const { _id } = payload;
   const result = await User.findById(_id);
@@ -26,4 +44,5 @@ const getAUserDetailsFromDB = async (payload: JwtPayload) => {
 export const UserServices = {
   createUserInDB,
   getAUserDetailsFromDB,
+  createAdminInDB,
 };
