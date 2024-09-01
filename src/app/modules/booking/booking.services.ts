@@ -32,11 +32,37 @@ const createBookingInDB = async (
       facility,
       date,
       $or: [
-        { 'timeSlots.startTime': { $lt: endTime, $gte: startTime } },
-        { 'timeSlots.endTime': { $gt: startTime, $lte: endTime } },
+        // Overlap case: start time is within an existing slot
+        {
+          $and: [
+            { 'timeSlots.startTime': { $lte: startTime } },
+            { 'timeSlots.endTime': { $gt: startTime } },
+          ],
+        },
+        // Overlap case: end time is within an existing slot
+        {
+          $and: [
+            { 'timeSlots.startTime': { $lt: endTime } },
+            { 'timeSlots.endTime': { $gte: endTime } },
+          ],
+        },
+        // Overlap case: existing slot is fully within the new slot
+        {
+          $and: [
+            { 'timeSlots.startTime': { $gte: startTime } },
+            { 'timeSlots.endTime': { $lte: endTime } },
+          ],
+        },
+        // Overlap case: new slot fully covers an existing slot
+        {
+          $and: [
+            { 'timeSlots.startTime': { $lte: startTime } },
+            { 'timeSlots.endTime': { $gte: endTime } },
+          ],
+        },
       ],
     });
-
+    console.log('Existing Booking Query Result:', existingBooking);
     if (existingBooking) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
@@ -45,7 +71,6 @@ const createBookingInDB = async (
     }
   }
 
-  // Calculate total payable amount
   const totalHours = timeSlots.reduce((acc, slot) => {
     const start = new Date(`${date}T${slot.startTime}`);
     const end = new Date(`${date}T${slot.endTime}`);
@@ -63,6 +88,9 @@ const createBookingInDB = async (
     user: user._id,
     payableAmount,
   });
+  console.log('Booking Data:', bookingData);
+  console.log('User:', user);
+  console.log('Facility:', facilityData);
 
   return booking;
 };
@@ -118,6 +146,7 @@ const checkAvailabileTimeSlotsFromDB = async (
   date: string,
   facilityId: string,
 ) => {
+  // If no date is provided, use today's date
   const selectedDate = date ? date : new Date().toISOString().split('T')[0];
 
   // Retrieve bookings from the database for the specified facility and date
@@ -134,8 +163,8 @@ const checkAvailabileTimeSlotsFromDB = async (
     })),
   );
 
-  // Find available time slots based on booked slots
-  const availableSlots = getAvailableTimeSlots(bookedSlots);
+  // Find available time slots based on booked slots and the current time
+  const availableSlots = getAvailableTimeSlots(bookedSlots, selectedDate);
 
   return availableSlots;
 };

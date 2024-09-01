@@ -62,13 +62,6 @@ const checkAvailabileTimeSlots = catchAsync(
     const date = req.query.date as string;
     const facilityId = req.query.facility as string;
 
-    if (!facilityId) {
-      return res.status(httpStatus.BAD_REQUEST).send({
-        success: false,
-        message: 'Facility ID is required',
-      });
-    }
-
     const result = await BookingServices.checkAvailabileTimeSlotsFromDB(
       date,
       facilityId,

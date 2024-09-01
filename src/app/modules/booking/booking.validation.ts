@@ -17,39 +17,45 @@ const timeSlotValidationSchema = z.object({
     .regex(/^\d{2}:\d{2}$/, 'End time must be in HH:MM format.'),
 });
 
-export const bookingValidationSchema = z
-  .object({
-    facility: objectIdValidationSchema,
-    date: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format.'),
-    timeSlots: z
-      .array(timeSlotValidationSchema)
-      .min(1, 'At least one time slot is required'),
-    payableAmount: z.number().optional(),
-    transactionId: z.string().optional(),
-    isBooked: z
-      .enum([...isBooking] as [string, ...string[]])
-      .default('confirmed'),
-  })
-  .refine(
-    (data) => {
-      return data.timeSlots.every((slot) => {
-        const [startHour, startMinute] = slot.startTime.split(':').map(Number);
-        const [endHour, endMinute] = slot.endTime.split(':').map(Number);
+// Main Booking Validation Schema
+export const bookingValidationSchema = z.object({
+  facility: objectIdValidationSchema,
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format.'),
+  timeSlots: z
+    .array(timeSlotValidationSchema)
+    .min(1, 'At least one time slot is required')
+    .refine(
+      (timeSlots) => {
+        // Ensure no overlapping time slots within the same booking
+        for (let i = 0; i < timeSlots.length; i++) {
+          for (let j = i + 1; j < timeSlots.length; j++) {
+            const slotA = timeSlots[i];
+            const slotB = timeSlots[j];
 
-        // Convert time to minutes since start of the day for comparison
-        const startTimeInMinutes = startHour * 60 + startMinute;
-        const endTimeInMinutes = endHour * 60 + endMinute;
+            const slotAStart = new Date(`1970-01-01T${slotA.startTime}:00Z`);
+            const slotAEnd = new Date(`1970-01-01T${slotA.endTime}:00Z`);
+            const slotBStart = new Date(`1970-01-01T${slotB.startTime}:00Z`);
+            const slotBEnd = new Date(`1970-01-01T${slotB.endTime}:00Z`);
 
-        return startTimeInMinutes < endTimeInMinutes;
-      });
-    },
-    {
-      message: 'Start time must be before end time',
-      path: ['timeSlots'],
-    },
-  );
+            if (slotAStart < slotBEnd && slotAEnd > slotBStart) {
+              return false;
+            }
+          }
+        }
+        return true;
+      },
+      {
+        message: 'Time slots within the same booking must not overlap',
+      },
+    ),
+  payableAmount: z.number().optional(),
+  transactionId: z.string().optional(),
+  isBooked: z
+    .enum([...isBooking] as [string, ...string[]])
+    .default('confirmed'),
+});
 
 export const BookingValidation = {
   bookingValidationSchema,

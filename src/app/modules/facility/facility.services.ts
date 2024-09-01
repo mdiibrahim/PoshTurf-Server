@@ -50,10 +50,15 @@ const updateFacilityInDB = async (
       'Facility Cannot delete in this route!!!',
     );
   }
-  const result = await Facility.findByIdAndUpdate(id, facilityData, {
-    new: true,
-  });
 
+  const result = await Facility.findByIdAndUpdate(
+    id,
+
+    facilityData,
+    {
+      new: true,
+    },
+  );
   return result;
 };
 
@@ -66,10 +71,7 @@ const softDeleteFacilityFromDB = async (id: string) => {
     {
       new: true,
     },
-  ).select({
-    createdAt: 0,
-    updatedAt: 0,
-  });
+  );
   return result;
 };
 

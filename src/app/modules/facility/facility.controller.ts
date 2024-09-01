@@ -3,10 +3,11 @@ import { FacilityServices } from './facility.services';
 import sendResponse from '../../utilis/sendResponse';
 import httpStatus from 'http-status';
 import catchAsync from '../../utilis/catchAsync';
+import { IFacility } from './facility.interface';
 
 const createFacility = catchAsync(async (req: Request, res: Response) => {
   const facility = req.body;
-  const result = await FacilityServices.createFacilityInDB(facility);
+  const result: IFacility = await FacilityServices.createFacilityInDB(facility);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
