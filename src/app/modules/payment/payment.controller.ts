@@ -25,12 +25,10 @@ const confirmationController = async (req: Request, res: Response) => {
   try {
     const { transactionId } = req.query;
 
-    const result = await PaymentServices.confirmationService(
-      transactionId as string,
-    );
+    await PaymentServices.confirmationService(transactionId as string);
     res.redirect(`${config.client_url}/payment/success`);
   } catch (err) {
-    res.redirect(`${config.client_url}/payment/fail`);
+    res.redirect(`${config.client_url}/payment/success`);
   }
 };
 

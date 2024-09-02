@@ -3,12 +3,13 @@ import cors from 'cors';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import notFoundRoute from './app/middlewares/notFoundRoute';
 import router from './app/routes';
+import config from './app/config';
 const app: Application = express();
 
 //parsers
 app.use(express.json());
 app.use(cors());
-app.use(cors({ origin: 'https://poshturf.netlify.app' }));
+app.use(cors({ origin: `${config.client_url}` }));
 
 //routes
 app.use('/api', router);
