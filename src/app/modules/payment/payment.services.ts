@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { readFileSync } from 'fs';
-import { join } from 'path';
 import { Booking } from '../booking/booking.model';
 import { initiatePayment, verifyPayment } from './payment.utils';
 import AppError from '../../errors/AppError';
@@ -47,11 +45,6 @@ const confirmationService = async (transactionId: string) => {
   } else {
     message = 'Payment Failed!';
   }
-
-  // eslint-disable-next-line no-undef
-  const filePath = join(__dirname, '../../../app/view/confirmation.html');
-  let template = readFileSync(filePath, 'utf-8');
-  template = template.replace('{{message}}', message);
 
   return message;
 };
