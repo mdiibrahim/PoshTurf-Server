@@ -62,7 +62,6 @@ const createBookingInDB = async (
         },
       ],
     });
-    console.log('Existing Booking Query Result:', existingBooking);
     if (existingBooking) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
@@ -88,9 +87,6 @@ const createBookingInDB = async (
     user: user._id,
     payableAmount,
   });
-  console.log('Booking Data:', bookingData);
-  console.log('User:', user);
-  console.log('Facility:', facilityData);
 
   return booking;
 };

@@ -2,6 +2,8 @@ import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 import { IFacility } from './facility.interface';
 import { Facility } from './facility.model';
+import { Booking } from '../booking/booking.model';
+import mongoose from 'mongoose';
 
 const createFacilityInDB = async (facility: IFacility) => {
   const existingFacility = await Facility.isFacilityExists(facility.name);
@@ -63,16 +65,36 @@ const updateFacilityInDB = async (
 };
 
 const softDeleteFacilityFromDB = async (id: string) => {
-  const result = await Facility.findByIdAndUpdate(
-    id,
-    {
-      isDeleted: true,
-    },
-    {
-      new: true,
-    },
-  );
-  return result;
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    // Soft delete the facility
+    const facility = await Facility.findByIdAndUpdate(
+      id,
+      { isDeleted: true },
+      { new: true, session },
+    );
+
+    if (!facility) {
+      throw new AppError(404, 'Facility not found');
+    }
+
+    // Delete related bookings
+    await Booking.deleteMany({ facility: id }, { session });
+
+    // Commit the transaction
+    await session.commitTransaction();
+    session.endSession();
+
+    return facility;
+  } catch (error) {
+    // If any error occurs, abort the transaction
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
 };
 
 export const FacilityServices = {

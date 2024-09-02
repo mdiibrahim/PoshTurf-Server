@@ -28,9 +28,9 @@ const confirmationController = async (req: Request, res: Response) => {
     const result = await PaymentServices.confirmationService(
       transactionId as string,
     );
-    res.redirect(`${config.base_url}/payment/success`);
+    res.redirect(`${config.client_url}/payment/success`);
   } catch (err) {
-    res.redirect(`${config.base_url}/payment/fail`);
+    res.redirect(`${config.client_url}/payment/fail`);
   }
 };
 
@@ -39,9 +39,9 @@ const failedController = async (req: Request, res: Response) => {
 
   try {
     await PaymentServices.failedService(transactionId as string);
-    res.redirect(`${config.base_url}/payment/fail`);
+    res.redirect(`${config.client_url}/payment/fail`);
   } catch (error) {
-    res.redirect(`${config.base_url}/payment/fail`);
+    res.redirect(`${config.client_url}/payment/fail`);
   }
 };
 export const PaymentControllers = {
