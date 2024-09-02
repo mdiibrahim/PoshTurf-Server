@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 import config from '../../config';
-import { Booking } from '../booking/booking.model';
 import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
 
