@@ -4,6 +4,7 @@ import { IFacility } from './facility.interface';
 import { Facility } from './facility.model';
 import { Booking } from '../booking/booking.model';
 import mongoose from 'mongoose';
+import { Review } from '../review/review.model';
 
 const createFacilityInDB = async (facility: IFacility) => {
   const existingFacility = await Facility.isFacilityExists(facility.name);
@@ -83,6 +84,9 @@ const softDeleteFacilityFromDB = async (id: string) => {
 
     // Delete related bookings
     await Booking.deleteMany({ facility: id }, { session });
+
+    // Delete related reviews
+    await Review.deleteMany({ facility: id }, { session });
 
     // Commit the transaction
     await session.commitTransaction();
